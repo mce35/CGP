@@ -13,6 +13,9 @@ html_start();
 
 printf('<h2>%s</h2>'."\n", $host);
 
+host_status($host);
+echo('<div style="clear:both">');
+
 $plugins = collectd_plugins($host);
 
 if(!$plugins) {
@@ -29,6 +32,7 @@ foreach ($selected_plugins as $selected_plugin) {
 		graphs_from_plugin($host, $selected_plugin, empty($plugin));
 	}
 }
+echo '</div>';
 echo '</div>';
 
 html_end();

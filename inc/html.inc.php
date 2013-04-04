@@ -127,6 +127,33 @@ function selected_timerange($value1, $value2) {
 	return '';
 }
 
+function host_status($host)
+{
+  echo('<div style="width: 500px">');
+  try
+    {
+      $db = new SQLite3("/var/lib/collectd/status.sqlite3");
+      $res = $db->query("SELECT plugin,plugin_instance,type,type_instance,status FROM status " .
+			"WHERE host='" . $host . "';");
+      while($row = $res->fetchArray())
+	{
+	  printf('<img style="float: left" src="img/%s.png" alt="%s/%s/%s/%s" title="%s/%s/%s/%s"/>',
+		 $row['status'],
+		 $row['plugin'], $row['plugin_instance'],
+		 $row['type'], $row['type_instance'],
+		 $row['plugin'], $row['plugin_instance'],
+		 $row['type'], $row['type_instance']);
+	}
+      $res->finalize();
+      $db->close();
+    }
+   catch(Exception $e)
+    {
+      # DB probably does not exist
+    }
+   echo('</div>');
+}
+
 function host_summary($hosts) {
 	global $CONFIG;
 
@@ -161,6 +188,9 @@ function host_summary($hosts) {
 					$rrd_info['ds[midterm].last_ds'],
 					$rrd_info['ds[longterm].last_ds']);
 			}
+			echo('<td>');
+			host_status($host);
+			echo('</td>');
 		}
 
 		print "</tr>\n";
